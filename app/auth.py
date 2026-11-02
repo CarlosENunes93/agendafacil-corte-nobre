@@ -120,3 +120,58 @@ def cadastrar_usuario(*, nome, login, senha, papel):
     )
     db.commit()
     return cursor.lastrowid
+
+
+@auth.route("/agendamentos/novo", methods=["GET", "POST"])
+@login_obrigatorio
+def novo_agendamento():
+    """Formulário autenticado que grava no banco somente após validação."""
+    from .agendamentos import DadosInvalidos, HorarioIndisponivel, registrar_agendamento
+
+    db = get_db()
+    clientes = db.execute("SELECT id, nome FROM clientes ORDER BY nome, id").fetchall()
+    profissionais = profissionais_disponiveis()
+    servicos = db.execute(
+        "SELECT id, nome, duracao_minutos FROM servicos ORDER BY nome, id"
+    ).fetchall()
+
+    valores = {
+        "cliente_id": "", "profissional_id": "",
+        "servico_id": "", "data": "", "hora": "", "origem": "agendado",
+    }
+    erro = None
+    status = 200
+
+    if request.method == "POST":
+        validar_csrf()
+        valores = {campo: request.form.get(campo, "").strip() for campo in valores}
+        try:
+            identificadores = {}
+            for campo in ("cliente_id", "profissional_id", "servico_id"):
+                texto = valores[campo]
+                if not texto.isascii() or not texto.isdecimal() or int(texto) <= 0:
+                    raise DadosInvalidos("Selecione um cliente, profissional e serviço válidos.")
+                identificadores[campo] = int(texto)
+
+            if not valores["data"] or not valores["hora"]:
+                raise DadosInvalidos("Informe a data e o horário inicial.")
+            inicio = valores["data"] + "T" + valores["hora"]
+            agendamento_id = registrar_agendamento(
+                **identificadores, inicio=inicio, origem=valores["origem"],
+            )
+        except (DadosInvalidos, HorarioIndisponivel) as exc:
+            erro = str(exc)
+            status = 409 if isinstance(exc, HorarioIndisponivel) else 400
+        else:
+            flash("Agendamento confirmado com sucesso!", "sucesso")
+            return redirect(url_for(
+                "auth.agenda", data=valores["data"],
+                profissional_id=identificadores["profissional_id"],
+                destaque=agendamento_id,
+            ), code=303)
+
+    return render_template(
+        "novo_agendamento.html", csrf_token=token_csrf(),
+        clientes=clientes, profissionais=profissionais,
+        servicos=servicos, valores=valores, erro=erro,
+    ), status
