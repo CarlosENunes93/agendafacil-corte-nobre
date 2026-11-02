@@ -3,27 +3,81 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Consulta de atendimentos da Barbearia Corte Nobre.">
   <title>Agenda diária | AgendaFácil</title>
   <style>
-    :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#122b44}
-    *{box-sizing:border-box}body{margin:0;background:#eff3f7}
-    header{background:#082f55;color:white;padding:20px;border-bottom:4px solid #c59d48}
-    header>div,main{max-width:760px;margin:auto}header h1{margin:0;font-size:1.8rem}
-    main{padding:30px 18px}.painel{background:white;padding:24px;border:1px solid #cad6df;border-radius:12px}
-    p{line-height:1.55}button{min-height:44px;padding:10px 20px;background:#083d6c;color:white;border:0;border-radius:8px;font-weight:bold;cursor:pointer}
-    :focus-visible{outline:3px solid #bb892b;outline-offset:3px}
+    :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#132f4c}
+    *{box-sizing:border-box}body{margin:0;background:#f2f5f9}
+    header{background:#082f55;color:white;border-bottom:4px solid #c59d48;padding:22px 18px}
+    .limite{max-width:900px;margin:auto}header h1{margin:0 0 4px;font-size:1.9rem}header p{margin:0}
+    main{max-width:900px;margin:24px auto;padding:0 16px}
+    .painel{background:white;padding:22px;border:1px solid #cbd5df;border-radius:14px;margin-bottom:20px}
+    h2{margin-top:0;font-size:1.45rem}h3{margin:0 0 9px}
+    p{line-height:1.5}
+    form.filtros{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;align-items:end}
+    label{display:block;font-weight:700;margin-bottom:7px}
+    input,select{width:100%;padding:11px;min-height:46px;font:inherit;border:2px solid #899cac;border-radius:7px;color:#132f4c;background:white}
+    button{min-height:46px;border:0;border-radius:7px;background:#083e6c;color:#fff;padding:10px 17px;font:inherit;font-weight:700;cursor:pointer}
+    :focus-visible{outline:3px solid #b58427;outline-offset:3px}
+    .topo{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center}
+    .lista{list-style:none;padding:0;margin:15px 0 0;display:grid;gap:13px}
+    .item{border:1px solid #ccd8e2;border-left:5px solid #a57d35;padding:15px;border-radius:10px}
+    .horario{font-weight:800;color:#082f55}.detalhe{color:#3a4d60;margin:5px 0}
+    .etiquetas{display:flex;flex-wrap:wrap;gap:8px;margin-top:9px}
+    .etiqueta{border-radius:100px;background:#eaf0f6;padding:5px 9px;font-size:.9rem;font-weight:700}
+    .confirmado{background:#e6f3ed;color:#175739}
+    .vazio{border:1px dashed #8da0b2;border-radius:9px;padding:20px}
+    .fim{display:flex;justify-content:flex-end}
+    @media(max-width:420px){.painel{padding:17px}.fim button{width:100%}}
   </style>
 </head>
 <body>
-<header><div><h1>AgendaFácil</h1><p>Barbearia Corte Nobre — Área restrita</p></div></header>
-<main><section class="painel" aria-labelledby="titulo">
-  <h2 id="titulo">Agenda diária</h2>
-  <p>Bem-vindo(a), {{ g.usuario["nome"] }}.</p>
-  <p>Seu acesso foi autenticado. A consulta dos atendimentos e as ações de reagendar e cancelar serão adicionadas na próxima etapa de desenvolvimento.</p>
-  <form action="{{ url_for('auth.logout') }}" method="post">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    <button type="submit">Sair</button>
-  </form>
-</section></main>
+  <header><div class="limite"><h1>AgendaFácil</h1><p>Sistema de agendamentos — Barbearia Corte Nobre</p></div></header>
+  <main>
+    <section class="painel" aria-labelledby="titulo">
+      <div class="topo">
+        <div><h2 id="titulo">Agenda diária</h2><p>Profissional autorizado: {{ g.usuario["nome"] }}</p></div>
+        <form method="post" action="{{ url_for('auth.logout') }}" class="fim">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <button type="submit">Sair</button>
+        </form>
+      </div>
+      <form class="filtros" method="get" action="{{ url_for('auth.agenda') }}" aria-label="Filtros da agenda">
+        <div><label for="data">Data</label><input id="data" type="date" name="data" value="{{ data }}" required></div>
+        <div>
+          <label for="profissional">Profissional</label>
+          <select id="profissional" name="profissional_id">
+            <option value="">Todos os profissionais</option>
+            {% for p in profissionais %}
+            <option value="{{ p['id'] }}" {% if profissional_id == p['id'] %}selected{% endif %}>{{ p['nome'] }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div><button type="submit">Consultar agenda</button></div>
+      </form>
+    </section>
+    <section class="painel" aria-labelledby="atendimentos">
+      <h2 id="atendimentos">Atendimentos confirmados: {{ atendimentos|length }}</h2>
+      <p>Exibindo registros existentes em {{ data[8:10] }}/{{ data[5:7] }}/{{ data[:4] }}.</p>
+      {% if atendimentos %}
+      <ol class="lista">
+        {% for item in atendimentos %}
+        <li class="item">
+          <h3 class="horario">{{ item['inicio'][11:16] }}–{{ item['fim'][11:16] }} · {{ item['cliente'] }}</h3>
+          <p class="detalhe"><strong>Serviço:</strong> {{ item['servico'] }}</p>
+          <p class="detalhe"><strong>Profissional:</strong> {{ item['profissional'] }}</p>
+          <div class="etiquetas">
+            <span class="etiqueta">{{ 'Encaixe' if item['origem'] == 'encaixe' else 'Agendado' }}</span>
+            <span class="etiqueta confirmado">✓ Confirmado</span>
+          </div>
+        </li>
+        {% endfor %}
+      </ol>
+      {% else %}
+      <p class="vazio" role="status">Nenhum atendimento confirmado encontrado para os filtros selecionados.</p>
+      {% endif %}
+      <p><small>A consulta já utiliza o banco de dados real. As ações de novo agendamento, reagendamento e cancelamento serão adicionadas em etapas posteriores.</small></p>
+    </section>
+  </main>
 </body>
 </html>
