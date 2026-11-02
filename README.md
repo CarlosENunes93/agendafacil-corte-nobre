@@ -140,6 +140,19 @@ $env:AGENDAFACIL_SECRET_KEY = (python -c "import secrets; print(secrets.token_ur
 
 **Não versionar nem compartilhar o segredo.** O SQLite de desenvolvimento é criado automaticamente em `instance/agenda.sqlite3`, ignorado pelo Git.
 
+### Preparar um cenário demonstrativo local (opcional)
+
+Para reproduzir as telas da Experiência Prática II **sem expor dados pessoais reais**, use um banco local descartável. O comando abaixo só funciona quando o modo demonstrativo é habilitado explicitamente:
+
+```powershell
+$env:AGENDAFACIL_DEMO_ENABLED = "1"
+python -m flask --app run:app preparar-demo --confirmar
+```
+
+Esse comando prepara **Rafael Costa**, os serviços **Corte masculino (30 minutos)** e **Barba (30 minutos)** e os clientes fictícios **Pedro Almeida, Bruno Martins e Lucas Ferreira**. Insere somente dois atendimentos inicialmente: Pedro às 09:00 e Bruno às 10:00, em 10/11/2026. O encaixe de Lucas, às **14:00**, fica livre para ser registrado manualmente durante a demonstração. A execução repetida não duplica os mesmos atendimentos. O modo demo não cria usuários ou senhas.
+
+**Não execute o comando de demonstração em um banco que contenha dados reais.** Para desativar o modo após a preparação: `Remove-Item Env:AGENDAFACIL_DEMO_ENABLED`.
+
 Crie uma conta inicial, informando a senha somente no prompt seguro:
 
 ```powershell
@@ -152,7 +165,7 @@ Execute o servidor local:
 python -m flask --app run:app run
 ```
 
-Abra `http://127.0.0.1:5000/login` e entre com o usuário criado. A agenda consulta registros efetivamente armazenados no SQLite, e o botão **Novo agendamento** abre o formulário autenticado. Para utilizá-lo, devem existir previamente registros de clientes, profissionais e serviços no banco. O cadastro de clientes já pode ser realizado na interface. Profissionais e serviços ainda precisam ser cadastrados no SQLite por procedimento administrativo; a interface para esses dois cadastros não faz parte da versão atual. Os dados fictícios do protótipo são usados nos testes, não criados automaticamente no banco normal. A rota `/health` permite verificar a resposta básica do servidor.
+Abra `http://127.0.0.1:5000/login` e entre com o usuário criado. A agenda consulta registros efetivamente armazenados no SQLite, e o botão **Novo agendamento** abre o formulário autenticado. Para utilizá-lo, devem existir previamente registros de clientes, profissionais e serviços no banco. O cadastro de clientes já pode ser realizado na interface. Para a demonstração acadêmica, profissionais e serviços podem ser preparados pelo comando explícito acima. A interface administrativa desses dois cadastros ainda não foi implementada. Os dados fictícios do protótipo são usados nos testes, não criados automaticamente no banco normal. A rota `/health` permite verificar a resposta básica do servidor.
 
 Execute os testes:
 
