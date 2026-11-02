@@ -12,7 +12,7 @@ def app(tmp_path):
     return create_app({
         "TESTING": True,
         "DATABASE": str(tmp_path / "teste.sqlite3"),
-        "SECRET_KEY": "apenas-para-testes",
+        "SECRET_KEY": "segredo-longo-exclusivamente-para-testes",
     })
 
 
