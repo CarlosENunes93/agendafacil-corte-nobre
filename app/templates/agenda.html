@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agenda diária | AgendaFácil</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#122b44}
+    *{box-sizing:border-box}body{margin:0;background:#eff3f7}
+    header{background:#082f55;color:white;padding:20px;border-bottom:4px solid #c59d48}
+    header>div,main{max-width:760px;margin:auto}header h1{margin:0;font-size:1.8rem}
+    main{padding:30px 18px}.painel{background:white;padding:24px;border:1px solid #cad6df;border-radius:12px}
+    p{line-height:1.55}button{min-height:44px;padding:10px 20px;background:#083d6c;color:white;border:0;border-radius:8px;font-weight:bold;cursor:pointer}
+    :focus-visible{outline:3px solid #bb892b;outline-offset:3px}
+  </style>
+</head>
+<body>
+<header><div><h1>AgendaFácil</h1><p>Barbearia Corte Nobre — Área restrita</p></div></header>
+<main><section class="painel" aria-labelledby="titulo">
+  <h2 id="titulo">Agenda diária</h2>
+  <p>Bem-vindo(a), {{ g.usuario["nome"] }}.</p>
+  <p>Seu acesso foi autenticado. A consulta dos atendimentos e as ações de reagendar e cancelar serão adicionadas na próxima etapa de desenvolvimento.</p>
+  <form action="{{ url_for('auth.logout') }}" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button type="submit">Sair</button>
+  </form>
+</section></main>
+</body>
+</html>
