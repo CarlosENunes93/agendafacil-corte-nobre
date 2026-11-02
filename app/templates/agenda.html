@@ -57,6 +57,10 @@
       </form>
     </section>
     <section class="painel" aria-labelledby="atendimentos">
+      {% for categoria, mensagem in get_flashed_messages(with_categories=true) %}
+      <p role="status" style="background:#e6f3ed;color:#175739;padding:14px;border-radius:8px;font-weight:700">{{ mensagem }}</p>
+      {% endfor %}
+      <p><a href="{{ url_for('auth.novo_agendamento') }}">+ Novo agendamento</a></p>
       <h2 id="atendimentos">Atendimentos confirmados: {{ atendimentos|length }}</h2>
       <p>Exibindo registros existentes em {{ data[8:10] }}/{{ data[5:7] }}/{{ data[:4] }}.</p>
       {% if atendimentos %}
@@ -76,7 +80,7 @@
       {% else %}
       <p class="vazio" role="status">Nenhum atendimento confirmado encontrado para os filtros selecionados.</p>
       {% endif %}
-      <p><small>A consulta já utiliza o banco de dados real. As ações de novo agendamento, reagendamento e cancelamento serão adicionadas em etapas posteriores.</small></p>
+      <p><small>A consulta e o cadastro usam o banco de dados real. As ações de reagendamento e cancelamento ainda serão implementadas.</small></p>
     </section>
   </main>
 </body>
