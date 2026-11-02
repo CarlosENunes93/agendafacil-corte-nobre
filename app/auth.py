@@ -7,6 +7,8 @@ import secrets
 from functools import wraps
 
 from flask import Blueprint, abort, flash, g, redirect, render_template, request, session, url_for
+
+from .consulta import FiltroInvalido, consultar_agenda, data_consulta, profissionais_disponiveis
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from .db import get_db
@@ -81,7 +83,25 @@ def logout():
 @auth.get("/agenda")
 @login_obrigatorio
 def agenda():
-    return render_template("agenda.html", csrf_token=token_csrf())
+    """Consulta a agenda persistida, com filtros validados no servidor."""
+    data = request.args.get("data")
+    profissional = request.args.get("profissional_id", "")
+    try:
+        dia = data_consulta(data)
+        profissional_id = None
+        if profissional:
+            if not profissional.isdecimal() or int(profissional) <= 0:
+                raise FiltroInvalido("Profissional inválido.")
+            profissional_id = int(profissional)
+        atendimentos = consultar_agenda(data=dia, profissional_id=profissional_id)
+    except FiltroInvalido as exc:
+        abort(400, description=str(exc))
+
+    return render_template(
+        "agenda.html", csrf_token=token_csrf(),
+        data=dia, profissional_id=profissional_id,
+        profissionais=profissionais_disponiveis(), atendimentos=atendimentos,
+    )
 
 
 def cadastrar_usuario(*, nome, login, senha, papel):
