@@ -2,7 +2,7 @@
 
 **Projeto acadêmico de Análise e Desenvolvimento de Sistemas | Disciplina: Projeto de Software**
 
-**Estado atual:** documentação inicial do MVP; implementação, testes e validações ainda não comprovados neste repositório.
+**Estado atual:** MVP em desenvolvimento na branch `feature/estrutura-inicial-flask`. O código inclui autenticação, consulta da agenda, novos agendamentos e encaixes, cadastro de clientes, cancelamento e reagendamento. A comprovação dos testes automatizados consta nas execuções do GitHub Actions; a validação externa e a revisão final ainda estão pendentes.
 
 O **AgendaFácil** é uma proposta de aplicação web responsiva para organizar os agendamentos e encaixes presenciais da **Barbearia Corte Nobre**, situada em Sorocaba/SP. O projeto dá continuidade às **Experiências Práticas I e II** e orienta a execução e a coleta de evidências técnicas na **Experiência Prática III**.
 
@@ -122,7 +122,7 @@ Na **Experiência Prática III**, deverão ser realizadas **ao menos duas rodada
 
 ## 9. Como executar a versão em desenvolvimento
 
-> **Estado do código:** aplicação Flask com autenticação, consulta da agenda diária a partir do SQLite (filtros de data e profissional), **formulário autenticado de novos agendamentos e encaixes com proteção CSRF**, confirmação na agenda e verificação transacional de conflitos. Cadastro de novos clientes pela interface, cancelamento e reagendamento **ainda não estão implementados**. As instruções abaixo destinam-se a execução local, não à publicação em produção.
+> **Estado do código:** aplicação Flask com autenticação, consulta da agenda diária a partir do SQLite (filtros de data e profissional), **formulário autenticado de novos agendamentos e encaixes com proteção CSRF**, confirmação na agenda e verificação transacional de conflitos. Cadastro de clientes, cancelamento e reagendamento **já estão implementados e cobertos por testes automatizados**; o cadastro administrativo de profissionais e serviços ainda precisa ser disponibilizado de forma prática. O sistema não foi validado externamente nem preparado para produção. As instruções abaixo destinam-se a execução local, não à publicação em produção.
 
 Pré-requisitos: **Python 3.12** e Git. No terminal, na raiz do repositório:
 
@@ -152,7 +152,7 @@ Execute o servidor local:
 python -m flask --app run:app run
 ```
 
-Abra `http://127.0.0.1:5000/login` e entre com o usuário criado. A agenda consulta registros efetivamente armazenados no SQLite, e o botão **Novo agendamento** abre o formulário autenticado. Para utilizá-lo, devem existir previamente registros de clientes, profissionais e serviços no banco. O cadastro desses registros por interface administrativa ainda não foi disponibilizado. Os dados fictícios do protótipo são usados nos testes, não criados automaticamente no banco normal. A rota `/health` permite verificar a resposta básica do servidor.
+Abra `http://127.0.0.1:5000/login` e entre com o usuário criado. A agenda consulta registros efetivamente armazenados no SQLite, e o botão **Novo agendamento** abre o formulário autenticado. Para utilizá-lo, devem existir previamente registros de clientes, profissionais e serviços no banco. O cadastro de clientes já pode ser realizado na interface. Profissionais e serviços ainda precisam ser cadastrados no SQLite por procedimento administrativo; a interface para esses dois cadastros não faz parte da versão atual. Os dados fictícios do protótipo são usados nos testes, não criados automaticamente no banco normal. A rota `/health` permite verificar a resposta básica do servidor.
 
 Execute os testes:
 
