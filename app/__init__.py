@@ -17,6 +17,7 @@ def create_app(test_config=None):
         SESSION_COOKIE_HTTPONLY=True,
         SESSION_COOKIE_SAMESITE="Lax",
         PERMANENT_SESSION_LIFETIME=3600,
+        DEMO_ENABLED=os.environ.get("AGENDAFACIL_DEMO_ENABLED") == "1",
     )
     if test_config is not None:
         app.config.update(test_config)
@@ -44,5 +45,18 @@ def create_app(test_config=None):
         except ValueError as exc:
             raise click.ClickException(str(exc)) from exc
         click.echo("Usuário criado com sucesso.")
+
+    @app.cli.command("preparar-demo")
+    @click.option("--confirmar", is_flag=True, help="Confirma uso exclusivo de banco local fictício.")
+    def preparar_demo(confirmar):
+        """Prepara barbeiro, serviços e atendimentos fictícios em ambiente de demonstração."""
+        from .demo import preparar_demonstracao
+
+        if not confirmar or not app.config.get("DEMO_ENABLED"):
+            raise click.ClickException(
+                "Defina AGENDAFACIL_DEMO_ENABLED=1 e informe --confirmar, somente em banco local descartável."
+            )
+        quantidade = preparar_demonstracao()
+        click.echo(f"Dados fictícios preparados. Novos atendimentos: {quantidade}.")
 
     return app
