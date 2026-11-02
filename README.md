@@ -120,9 +120,53 @@ Na **Experiência Prática III**, deverão ser realizadas **ao menos duas rodada
 
 **ODS 8 — Trabalho Decente e Crescimento Econômico**, com conexão à **Meta 8.3**. A contribuição pretendida é apoiar a organização e a produtividade de um pequeno negócio local, reduzindo barreiras no gerenciamento dos atendimentos. **Não se afirma que o software, por si só, produziu impacto econômico mensurado**.
 
-## 9. Como executar
+## 9. Como executar a versão em desenvolvimento
 
-As instruções de instalação, configuração, inicialização do banco, execução do servidor e testes serão incluídas **quando houver código executável no repositório**, com comandos efetivamente verificados. Neste estágio, fornecer comandos fictícios ou declarar que o sistema está funcionando seria incorreto.
+> **Estado do código:** aplicação inicial Flask, login com usuários cadastrados pelo administrador, página interna restrita e serviço de agendamento com prevenção de conflitos. A interface completa de agendamentos, cancelamento e reagendamento **ainda não está pronta**. As instruções abaixo destinam-se a execução local, não à publicação em produção.
+
+Pré-requisitos: **Python 3.12** e Git. No terminal, na raiz do repositório:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+```
+
+No PowerShell, configure um segredo **aleatório e exclusivo** antes de iniciar o projeto:
+
+```powershell
+$env:AGENDAFACIL_SECRET_KEY = python -c "import secrets; print(secrets.token_urlsafe(48))"
+```
+
+O PowerShell pode interpretar o resultado como texto ou coleção de saída; para uma atribuição inequívoca, também é possível executar:
+
+```powershell
+$env:AGENDAFACIL_SECRET_KEY = (python -c "import secrets; print(secrets.token_urlsafe(48))")
+```
+
+**Não versionar nem compartilhar o segredo.** O SQLite de desenvolvimento é criado automaticamente em `instance/agenda.sqlite3`, ignorado pelo Git.
+
+Crie uma conta inicial, informando a senha somente no prompt seguro:
+
+```powershell
+python -m flask --app run:app criar-usuario
+```
+
+Execute o servidor local:
+
+```powershell
+python -m flask --app run:app run
+```
+
+Abra `http://127.0.0.1:5000/login` e entre com o usuário criado. A agenda nesta fase é uma página restrita de desenvolvimento, sem consulta efetiva dos registros. A rota `/health` permite verificar a resposta básica do servidor.
+
+Execute os testes:
+
+```powershell
+python -m pytest -q
+```
+
+Os testes também são configurados no GitHub Actions. Seus resultados devem ser verificados na execução correspondente; a mera presença do workflow não comprova aprovação. Para uma implantação real serão necessários HTTPS, cookies seguros, gerenciamento de segredo, backup persistente, revisão de ameaças e restrições de acesso adicionais.
 
 ---
 
