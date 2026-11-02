@@ -74,13 +74,20 @@
             <span class="etiqueta">{{ 'Encaixe' if item['origem'] == 'encaixe' else 'Agendado' }}</span>
             <span class="etiqueta confirmado">✓ Confirmado</span>
           </div>
+          <div class="acoes-item" style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:14px">
+            <a href="{{ url_for('auth.reagendar_atendimento', agendamento_id=item['id']) }}">Reagendar</a>
+            <form method="post" action="{{ url_for('auth.cancelar_atendimento', agendamento_id=item['id']) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <button type="submit" aria-label="Cancelar atendimento de {{ item['cliente'] }}">Cancelar</button>
+            </form>
+          </div>
         </li>
         {% endfor %}
       </ol>
       {% else %}
       <p class="vazio" role="status">Nenhum atendimento confirmado encontrado para os filtros selecionados.</p>
       {% endif %}
-      <p><small>A consulta e o cadastro usam o banco de dados real. As ações de reagendamento e cancelamento ainda serão implementadas.</small></p>
+      <p><small>Ações de cancelamento e reagendamento exigem acesso autenticado e confirmação no servidor.</small></p>
     </section>
   </main>
 </body>
