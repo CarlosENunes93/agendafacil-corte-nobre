@@ -122,7 +122,7 @@ Na **Experiência Prática III**, deverão ser realizadas **ao menos duas rodada
 
 ## 9. Como executar a versão em desenvolvimento
 
-> **Estado do código:** aplicação inicial Flask, login com usuários cadastrados pelo administrador, página interna restrita e serviço de agendamento com prevenção de conflitos. A interface completa de agendamentos, cancelamento e reagendamento **ainda não está pronta**. As instruções abaixo destinam-se a execução local, não à publicação em produção.
+> **Estado do código:** aplicação Flask com autenticação, consulta da agenda diária a partir do SQLite (filtros de data e profissional), e serviço de registro de agendamentos com prevenção de conflitos. O formulário de criação, as ações de cancelamento e reagendamento e o restante do MVP **ainda não estão prontos**. As instruções abaixo destinam-se a execução local, não à publicação em produção.
 
 Pré-requisitos: **Python 3.12** e Git. No terminal, na raiz do repositório:
 
@@ -152,7 +152,7 @@ Execute o servidor local:
 python -m flask --app run:app run
 ```
 
-Abra `http://127.0.0.1:5000/login` e entre com o usuário criado. A agenda nesta fase é uma página restrita de desenvolvimento, sem consulta efetiva dos registros. A rota `/health` permite verificar a resposta básica do servidor.
+Abra `http://127.0.0.1:5000/login` e entre com o usuário criado. A agenda nesta fase consulta os registros efetivamente armazenados no SQLite; os dados fictícios apresentados nos protótipos só aparecem quando inseridos em banco de testes ou por operações de cadastro implementadas. A rota `/health` permite verificar a resposta básica do servidor.
 
 Execute os testes:
 
