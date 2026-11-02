@@ -122,7 +122,7 @@ Na **Experiência Prática III**, deverão ser realizadas **ao menos duas rodada
 
 ## 9. Como executar a versão em desenvolvimento
 
-> **Estado do código:** aplicação Flask com autenticação, consulta da agenda diária a partir do SQLite (filtros de data e profissional), e serviço de registro de agendamentos com prevenção de conflitos. O formulário de criação, as ações de cancelamento e reagendamento e o restante do MVP **ainda não estão prontos**. As instruções abaixo destinam-se a execução local, não à publicação em produção.
+> **Estado do código:** aplicação Flask com autenticação, consulta da agenda diária a partir do SQLite (filtros de data e profissional), **formulário autenticado de novos agendamentos e encaixes com proteção CSRF**, confirmação na agenda e verificação transacional de conflitos. Cadastro de novos clientes pela interface, cancelamento e reagendamento **ainda não estão implementados**. As instruções abaixo destinam-se a execução local, não à publicação em produção.
 
 Pré-requisitos: **Python 3.12** e Git. No terminal, na raiz do repositório:
 
@@ -152,7 +152,7 @@ Execute o servidor local:
 python -m flask --app run:app run
 ```
 
-Abra `http://127.0.0.1:5000/login` e entre com o usuário criado. A agenda nesta fase consulta os registros efetivamente armazenados no SQLite; os dados fictícios apresentados nos protótipos só aparecem quando inseridos em banco de testes ou por operações de cadastro implementadas. A rota `/health` permite verificar a resposta básica do servidor.
+Abra `http://127.0.0.1:5000/login` e entre com o usuário criado. A agenda consulta registros efetivamente armazenados no SQLite, e o botão **Novo agendamento** abre o formulário autenticado. Para utilizá-lo, devem existir previamente registros de clientes, profissionais e serviços no banco. O cadastro desses registros por interface administrativa ainda não foi disponibilizado. Os dados fictícios do protótipo são usados nos testes, não criados automaticamente no banco normal. A rota `/health` permite verificar a resposta básica do servidor.
 
 Execute os testes:
 
