@@ -135,12 +135,6 @@ python -m pip install -r requirements.txt
 No PowerShell, configure um segredo **aleatório e exclusivo** antes de iniciar o projeto:
 
 ```powershell
-$env:AGENDAFACIL_SECRET_KEY = python -c "import secrets; print(secrets.token_urlsafe(48))"
-```
-
-O PowerShell pode interpretar o resultado como texto ou coleção de saída; para uma atribuição inequívoca, também é possível executar:
-
-```powershell
 $env:AGENDAFACIL_SECRET_KEY = (python -c "import secrets; print(secrets.token_urlsafe(48))")
 ```
 
