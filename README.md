@@ -2,7 +2,7 @@
 
 **Projeto acadêmico de Análise e Desenvolvimento de Sistemas | Disciplina: Projeto de Software**
 
-**Estado atual:** MVP em desenvolvimento na branch `feature/estrutura-inicial-flask`. O código inclui autenticação, consulta da agenda, novos agendamentos e encaixes, cadastro de clientes, cancelamento e reagendamento. A comprovação dos testes automatizados consta nas execuções do GitHub Actions; a validação externa e a revisão final ainda estão pendentes.
+**Estado atual:** primeira versão do MVP integrada à branch `main` pelo [Pull Request #1](https://github.com/CarlosENunes93/agendafacil-corte-nobre/pull/1), com autenticação, agenda, cadastro de clientes, agendamentos, encaixes, cancelamento e reagendamento. O GitHub Actions aprovou os testes automatizados; **teste manual, avaliação de acessibilidade e duas rodadas de validação externa ainda precisam ser comprovados**.
 
 O **AgendaFácil** é uma proposta de aplicação web responsiva para organizar os agendamentos e encaixes presenciais da **Barbearia Corte Nobre**, situada em Sorocaba/SP. O projeto dá continuidade às **Experiências Práticas I e II** e orienta a execução e a coleta de evidências técnicas na **Experiência Prática III**.
 
@@ -106,7 +106,7 @@ Na agenda fictícia do mesmo profissional também constam Pedro Almeida (09:00�
 
 ## 7. Plano de validação e critérios de aceitação
 
-A Experiência Prática II definiu três tarefas:
+A Experiência Prática II definiu três tarefas. O roteiro e as fichas de registro das duas rodadas estão em [docs/PLANO_VALIDACAO.md](docs/PLANO_VALIDACAO.md):
 
 - **T01:** compreender o acesso e localizar a agenda;
 - **T02:** registrar ou indicar corretamente o registro do encaixe fictício;
