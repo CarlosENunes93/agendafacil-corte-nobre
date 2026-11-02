@@ -175,3 +175,91 @@ def novo_agendamento():
         clientes=clientes, profissionais=profissionais,
         servicos=servicos, valores=valores, erro=erro,
     ), status
+
+
+@auth.route("/clientes/novo", methods=["GET", "POST"])
+@login_obrigatorio
+def novo_cliente():
+    """Criação de cliente por usuário autenticado, com proteção CSRF."""
+    from .agendamentos import DadosInvalidos
+    from .operacoes import cadastrar_cliente
+
+    nome = ""
+    telefone = ""
+    erro = None
+    if request.method == "POST":
+        validar_csrf()
+        nome = request.form.get("nome", "")
+        telefone = request.form.get("telefone", "")
+        try:
+            cadastrar_cliente(nome, telefone)
+        except DadosInvalidos as exc:
+            erro = str(exc)
+        else:
+            flash("Cliente cadastrado com sucesso!", "sucesso")
+            return redirect(url_for("auth.novo_agendamento"), code=303)
+    return render_template(
+        "novo_cliente.html", csrf_token=token_csrf(),
+        nome=nome, telefone=telefone, erro=erro,
+    ), (400 if erro else 200)
+
+
+@auth.post("/agendamentos/<int:agendamento_id>/cancelar")
+@login_obrigatorio
+def cancelar_atendimento(agendamento_id):
+    """Cancelar é mutação: somente POST autenticado com token CSRF."""
+    from .agendamentos import DadosInvalidos
+    from .operacoes import cancelar_agendamento, obter_atendimento
+
+    validar_csrf()
+    atendimento = obter_atendimento(agendamento_id)
+    if atendimento is None:
+        abort(404)
+    try:
+        cancelar_agendamento(agendamento_id)
+    except DadosInvalidos:
+        abort(409, description="Este atendimento não pode ser cancelado.")
+    flash("Atendimento cancelado com sucesso!", "sucesso")
+    return redirect(url_for(
+        "auth.agenda", data=atendimento["inicio"][:10],
+        profissional_id=atendimento["profissional_id"],
+    ), code=303)
+
+
+@auth.route("/agendamentos/<int:agendamento_id>/reagendar", methods=["GET", "POST"])
+@login_obrigatorio
+def reagendar_atendimento(agendamento_id):
+    from .agendamentos import DadosInvalidos, HorarioIndisponivel
+    from .operacoes import obter_atendimento, reagendar_agendamento
+
+    atual = obter_atendimento(agendamento_id)
+    if atual is None:
+        abort(404)
+    if atual["status"] != "confirmado":
+        abort(409, description="Atendimento cancelado não pode ser reagendado.")
+
+    data = atual["inicio"][:10]
+    hora = atual["inicio"][11:16]
+    erro = None
+    status = 200
+    if request.method == "POST":
+        validar_csrf()
+        data = request.form.get("data", "").strip()
+        hora = request.form.get("hora", "").strip()
+        try:
+            if not data or not hora:
+                raise DadosInvalidos("Informe a nova data e o novo horário.")
+            reagendar_agendamento(agendamento_id, data + "T" + hora)
+        except (DadosInvalidos, HorarioIndisponivel) as exc:
+            erro = str(exc)
+            status = 409 if isinstance(exc, HorarioIndisponivel) else 400
+        else:
+            flash("Atendimento reagendado com sucesso!", "sucesso")
+            return redirect(url_for(
+                "auth.agenda", data=data,
+                profissional_id=atual["profissional_id"],
+            ), code=303)
+    return render_template(
+        "reagendar.html", csrf_token=token_csrf(),
+        atual=atual, data=data, hora=hora, erro=erro,
+    ), status
