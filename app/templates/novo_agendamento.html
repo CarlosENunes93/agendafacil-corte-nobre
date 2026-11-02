@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Cadastro de agendamento ou encaixe na Barbearia Corte Nobre.">
+  <title>Novo agendamento | AgendaFácil</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#142e47}
+    *{box-sizing:border-box}body{margin:0;background:#f0f4f8}
+    header{background:#082f55;color:#fff;padding:22px 18px;border-bottom:4px solid #c59d48}
+    header .limite,main{max-width:680px;margin:auto}
+    header h1{margin:0 0 4px;font-size:1.9rem}header p{margin:0}
+    main{padding:25px 16px}section{background:white;border:1px solid #ccd6e1;padding:24px;border-radius:15px}
+    a{color:#064e7d;font-weight:700}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #b58427;outline-offset:3px}
+    h2{margin:15px 0 8px}p{line-height:1.5}
+    .campo{margin:16px 0}label{display:block;font-weight:700;margin-bottom:7px}
+    input,select{font:inherit;width:100%;min-height:46px;border:2px solid #96a6b7;border-radius:8px;padding:10px;color:#142e47;background:white}
+    .grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:0 15px}
+    .erro{border:2px solid #ae3434;background:#fff1f1;color:#781919;padding:12px;border-radius:8px}
+    .acoes{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;align-items:center}
+    button{background:#073c69;color:white;border:0;border-radius:8px;min-height:46px;padding:10px 17px;font:inherit;font-weight:700;cursor:pointer}
+    .aviso{font-size:.92rem;color:#43576c}
+    @media(max-width:420px){section{padding:18px}.acoes button{width:100%}}
+  </style>
+</head>
+<body>
+<header><div class="limite"><h1>AgendaFácil</h1><p>Sistema de agendamentos — Barbearia Corte Nobre</p></div></header>
+<main><section aria-labelledby="titulo">
+  <a href="{{ url_for('auth.agenda') }}">← Voltar à agenda</a>
+  <h2 id="titulo">Novo agendamento</h2>
+  <p><a href="{{ url_for('auth.novo_cliente') }}">+ Cadastrar novo cliente</a></p>
+  <p>Registre um horário agendado ou um encaixe presencial. Os campos são obrigatórios.</p>
+  {% if erro %}<p class="erro" role="alert">{{ erro }}</p>{% endif %}
+  {% if not clientes or not profissionais or not servicos %}
+  <p class="erro" role="alert">Para registrar atendimentos, cadastre primeiro os clientes, profissionais e serviços necessários.</p>
+  {% endif %}
+  <form action="{{ url_for('auth.novo_agendamento') }}" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <div class="campo"><label for="cliente_id">Cliente</label>
+      <select id="cliente_id" name="cliente_id" required>
+        <option value="">Selecione o cliente</option>
+        {% for item in clientes %}
+        <option value="{{ item['id'] }}" {% if valores['cliente_id'] == item['id']|string %}selected{% endif %}>{{ item['nome'] }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="campo"><label for="profissional_id">Profissional</label>
+      <select id="profissional_id" name="profissional_id" required>
+        <option value="">Selecione o profissional</option>
+        {% for item in profissionais %}
+        <option value="{{ item['id'] }}" {% if valores['profissional_id'] == item['id']|string %}selected{% endif %}>{{ item['nome'] }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="campo"><label for="servico_id">Serviço e duração</label>
+      <select id="servico_id" name="servico_id" required>
+        <option value="">Selecione o serviço</option>
+        {% for item in servicos %}
+        <option value="{{ item['id'] }}" {% if valores['servico_id'] == item['id']|string %}selected{% endif %}>{{ item['nome'] }} — {{ item['duracao_minutos'] }} min</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="grade">
+      <div class="campo"><label for="data">Data</label>
+        <input id="data" type="date" name="data" value="{{ valores['data'] }}" required>
+      </div>
+      <div class="campo"><label for="hora">Horário inicial</label>
+        <input id="hora" type="time" name="hora" value="{{ valores['hora'] }}" required>
+      </div>
+    </div>
+    <div class="campo"><label for="origem">Origem do atendimento</label>
+      <select id="origem" name="origem" required>
+        <option value="agendado" {% if valores['origem'] == 'agendado' %}selected{% endif %}>Agendado</option>
+        <option value="encaixe" {% if valores['origem'] == 'encaixe' %}selected{% endif %}>Encaixe</option>
+      </select>
+    </div>
+    <p class="aviso">O horário final é calculado automaticamente com base na duração do serviço. A disponibilidade será confirmada somente após a validação no servidor.</p>
+    <div class="acoes"><button type="submit" {% if not clientes or not profissionais or not servicos %}disabled{% endif %}>Confirmar agendamento</button>
+      <a href="{{ url_for('auth.agenda') }}">Cancelar e voltar</a>
+    </div>
+  </form>
+</section></main>
+</body>
+</html>

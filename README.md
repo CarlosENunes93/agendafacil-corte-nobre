@@ -2,7 +2,7 @@
 
 **Projeto acadêmico de Análise e Desenvolvimento de Sistemas | Disciplina: Projeto de Software**
 
-**Estado atual:** documentação inicial do MVP; implementação, testes e validações ainda não comprovados neste repositório.
+**Estado atual:** MVP em desenvolvimento na branch `feature/estrutura-inicial-flask`. O código inclui autenticação, consulta da agenda, novos agendamentos e encaixes, cadastro de clientes, cancelamento e reagendamento. A comprovação dos testes automatizados consta nas execuções do GitHub Actions; a validação externa e a revisão final ainda estão pendentes.
 
 O **AgendaFácil** é uma proposta de aplicação web responsiva para organizar os agendamentos e encaixes presenciais da **Barbearia Corte Nobre**, situada em Sorocaba/SP. O projeto dá continuidade às **Experiências Práticas I e II** e orienta a execução e a coleta de evidências técnicas na **Experiência Prática III**.
 
@@ -120,9 +120,60 @@ Na **Experiência Prática III**, deverão ser realizadas **ao menos duas rodada
 
 **ODS 8 — Trabalho Decente e Crescimento Econômico**, com conexão à **Meta 8.3**. A contribuição pretendida é apoiar a organização e a produtividade de um pequeno negócio local, reduzindo barreiras no gerenciamento dos atendimentos. **Não se afirma que o software, por si só, produziu impacto econômico mensurado**.
 
-## 9. Como executar
+## 9. Como executar a versão em desenvolvimento
 
-As instruções de instalação, configuração, inicialização do banco, execução do servidor e testes serão incluídas **quando houver código executável no repositório**, com comandos efetivamente verificados. Neste estágio, fornecer comandos fictícios ou declarar que o sistema está funcionando seria incorreto.
+> **Estado do código:** aplicação Flask com autenticação, consulta da agenda diária a partir do SQLite (filtros de data e profissional), **formulário autenticado de novos agendamentos e encaixes com proteção CSRF**, confirmação na agenda e verificação transacional de conflitos. Cadastro de clientes, cancelamento e reagendamento **já estão implementados e cobertos por testes automatizados**; o cadastro administrativo de profissionais e serviços ainda precisa ser disponibilizado de forma prática. O sistema não foi validado externamente nem preparado para produção. As instruções abaixo destinam-se a execução local, não à publicação em produção.
+
+Pré-requisitos: **Python 3.12** e Git. No terminal, na raiz do repositório:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+```
+
+No PowerShell, configure um segredo **aleatório e exclusivo** antes de iniciar o projeto:
+
+```powershell
+$env:AGENDAFACIL_SECRET_KEY = (python -c "import secrets; print(secrets.token_urlsafe(48))")
+```
+
+**Não versionar nem compartilhar o segredo.** O SQLite de desenvolvimento é criado automaticamente em `instance/agenda.sqlite3`, ignorado pelo Git.
+
+### Preparar um cenário demonstrativo local (opcional)
+
+Para reproduzir as telas da Experiência Prática II **sem expor dados pessoais reais**, use um banco local descartável. O comando abaixo só funciona quando o modo demonstrativo é habilitado explicitamente:
+
+```powershell
+$env:AGENDAFACIL_DEMO_ENABLED = "1"
+python -m flask --app run:app preparar-demo --confirmar
+```
+
+Esse comando prepara **Rafael Costa**, os serviços **Corte masculino (30 minutos)** e **Barba (30 minutos)** e os clientes fictícios **Pedro Almeida, Bruno Martins e Lucas Ferreira**. Insere somente dois atendimentos inicialmente: Pedro às 09:00 e Bruno às 10:00, em 10/11/2026. O encaixe de Lucas, às **14:00**, fica livre para ser registrado manualmente durante a demonstração. A execução repetida não duplica os mesmos atendimentos. O modo demo não cria usuários ou senhas.
+
+**Não execute o comando de demonstração em um banco que contenha dados reais.** Para desativar o modo após a preparação: `Remove-Item Env:AGENDAFACIL_DEMO_ENABLED`.
+
+Crie uma conta inicial, informando a senha somente no prompt seguro:
+
+```powershell
+python -m flask --app run:app criar-usuario
+```
+
+Execute o servidor local:
+
+```powershell
+python -m flask --app run:app run
+```
+
+Abra `http://127.0.0.1:5000/login` e entre com o usuário criado. A agenda consulta registros efetivamente armazenados no SQLite, e o botão **Novo agendamento** abre o formulário autenticado. Para utilizá-lo, devem existir previamente registros de clientes, profissionais e serviços no banco. O cadastro de clientes já pode ser realizado na interface. Para a demonstração acadêmica, profissionais e serviços podem ser preparados pelo comando explícito acima. A interface administrativa desses dois cadastros ainda não foi implementada. Os dados fictícios do protótipo são usados nos testes, não criados automaticamente no banco normal. A rota `/health` permite verificar a resposta básica do servidor.
+
+Execute os testes:
+
+```powershell
+python -m pytest -q
+```
+
+Os testes também são configurados no GitHub Actions. Seus resultados devem ser verificados na execução correspondente; a mera presença do workflow não comprova aprovação. Para uma implantação real serão necessários HTTPS, cookies seguros, gerenciamento de segredo, backup persistente, revisão de ameaças e restrições de acesso adicionais.
 
 ---
 
