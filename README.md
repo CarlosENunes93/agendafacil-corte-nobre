@@ -120,23 +120,7 @@ Na **Experiência Prática III**, deverão ser realizadas **ao menos duas rodada
 
 **ODS 8 — Trabalho Decente e Crescimento Econômico**, com conexão à **Meta 8.3**. A contribuição pretendida é apoiar a organização e a produtividade de um pequeno negócio local, reduzindo barreiras no gerenciamento dos atendimentos. **Não se afirma que o software, por si só, produziu impacto econômico mensurado**.
 
-## 9. Execução e evidências 
-
-Etapas a serem realizadas e documentadas neste repositório:
-
-- [x] Criar o repositório público e iniciar sua documentação.
-- [ ] Organizar o código e implementar o MVP conforme o escopo.
-- [ ] Registrar evolução em commits compreensíveis e branches de trabalho.
-- [ ] Realizar revisão técnica documentada por **Pull Request**.
-- [ ] Criar e executar testes unitários e de integração com `pytest`.
-- [ ] Configurar **GitHub Actions** para executar verificações e testes automaticamente.
-- [ ] Testar o MVP em condições de uso compatíveis com a barbearia.
-- [ ] Conduzir ao menos duas rodadas de validação externa, com concordância do participante.
-- [ ] Documentar feedback, ajustes realizados, resultados e evidências verificáveis.
-
-Os itens só serão marcados como concluídos **após a execução e a comprovação correspondentes**.
-
-## 10. Como executar
+## 9. Como executar
 
 As instruções de instalação, configuração, inicialização do banco, execução do servidor e testes serão incluídas **quando houver código executável no repositório**, com comandos efetivamente verificados. Neste estágio, fornecer comandos fictícios ou declarar que o sistema está funcionando seria incorreto.
 
