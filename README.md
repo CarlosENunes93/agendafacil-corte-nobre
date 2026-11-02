@@ -120,7 +120,7 @@ Na **Experiência Prática III**, deverão ser realizadas **ao menos duas rodada
 
 **ODS 8 — Trabalho Decente e Crescimento Econômico**, com conexão à **Meta 8.3**. A contribuição pretendida é apoiar a organização e a produtividade de um pequeno negócio local, reduzindo barreiras no gerenciamento dos atendimentos. **Não se afirma que o software, por si só, produziu impacto econômico mensurado**.
 
-## 9. Execução e evidências da Experiência Prática III
+## 9. Execução e evidências 
 
 Etapas a serem realizadas e documentadas neste repositório:
 
