@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reagendar atendimento | AgendaFácil</title><style>:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#162f48}*{box-sizing:border-box}body{margin:0;background:#f0f4f8}header{background:#082f55;color:white;padding:22px 18px;border-bottom:4px solid #c59d48}header>div,main{max-width:650px;margin:auto}header h1{margin:0 0 5px;font-size:1.85rem}header p{margin:0}main{padding:25px 16px}.painel{background:white;border:1px solid #c8d5df;border-radius:14px;padding:23px}h2{margin-top:15px}p{line-height:1.5}label{display:block;font-weight:700;margin:16px 0 7px}input{font:inherit;display:block;width:100%;min-height:46px;border:2px solid #879bab;border-radius:8px;padding:10px}a{color:#074e7c;font-weight:700}button{min-height:46px;margin-top:22px;background:#093f6d;color:white;border:0;border-radius:8px;font:inherit;font-weight:700;padding:10px 16px;cursor:pointer}:focus-visible{outline:3px solid #b58427;outline-offset:3px}.erro{background:#fff1f1;border:2px solid #a32c33;color:#7e1c20;padding:12px;border-radius:8px}.aviso{font-size:.92rem;color:#44586a}</style></head>
+<body><header><div><h1>AgendaFácil</h1><p>Sistema de agendamentos — Barbearia Corte Nobre</p></div></header>
+<main><section class="painel" aria-labelledby="titulo">
+<a href="{{ url_for('auth.agenda', data=atual['inicio'][:10], profissional_id=atual['profissional_id']) }}">← Voltar à agenda</a>
+<h2 id="titulo">Reagendar atendimento</h2>
+<p><strong>Cliente:</strong> {{ atual['cliente'] }}</p>
+<p><strong>Profissional:</strong> {{ atual['profissional'] }}</p>
+<p><strong>Serviço:</strong> {{ atual['servico'] }} — {{ atual['duracao_minutos'] }} minutos</p>
+<p><strong>Horário atual:</strong> {{ atual['inicio'][8:10] }}/{{ atual['inicio'][5:7] }}/{{ atual['inicio'][:4] }} às {{ atual['inicio'][11:16] }}</p>
+{% if erro %}<p class="erro" role="alert">{{ erro }}</p>{% endif %}
+<form method="post" action="{{ url_for('auth.reagendar_atendimento', agendamento_id=atual['id']) }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+<label for="data">Nova data</label><input id="data" name="data" type="date" value="{{ data }}" required>
+<label for="hora">Novo horário inicial</label><input id="hora" name="hora" type="time" value="{{ hora }}" required>
+<button type="submit">Confirmar reagendamento</button>
+</form>
+<p class="aviso">A nova disponibilidade será validada no servidor. Em caso de conflito, o horário original será preservado.</p>
+</section></main></body></html>
