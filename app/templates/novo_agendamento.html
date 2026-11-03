@@ -21,15 +21,17 @@
     .acoes{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px;align-items:center}
     button{background:#073c69;color:white;border:0;border-radius:8px;min-height:46px;padding:10px 17px;font:inherit;font-weight:700;cursor:pointer}
     .aviso{font-size:.92rem;color:#43576c}
+    a.acao-link{display:inline-flex;align-items:center;min-height:44px;padding:10px 12px;border-radius:8px}
+    .previsao{border-left:4px solid #b68b37;background:#f6f8fa;padding:12px;margin:16px 0;line-height:1.5}
     @media(max-width:420px){section{padding:18px}.acoes button{width:100%}}
   </style>
 </head>
 <body>
 <header><div class="limite"><h1>AgendaFácil</h1><p>Sistema de agendamentos — Barbearia Corte Nobre</p></div></header>
 <main><section aria-labelledby="titulo">
-  <a href="{{ url_for('auth.agenda') }}">← Voltar à agenda</a>
+  <a class="acao-link" href="{{ url_for('auth.agenda') }}">← Voltar à agenda</a>
   <h2 id="titulo">Novo agendamento</h2>
-  <p><a href="{{ url_for('auth.novo_cliente') }}">+ Cadastrar novo cliente</a></p>
+  <p><a class="acao-link" href="{{ url_for('auth.novo_cliente') }}">+ Cadastrar novo cliente</a></p>
   <p>Registre um horário agendado ou um encaixe presencial. Os campos são obrigatórios.</p>
   {% if erro %}<p class="erro" role="alert">{{ erro }}</p>{% endif %}
   {% if not clientes or not profissionais or not servicos %}
@@ -57,7 +59,7 @@
       <select id="servico_id" name="servico_id" required>
         <option value="">Selecione o serviço</option>
         {% for item in servicos %}
-        <option value="{{ item['id'] }}" {% if valores['servico_id'] == item['id']|string %}selected{% endif %}>{{ item['nome'] }} — {{ item['duracao_minutos'] }} min</option>
+        <option value="{{ item['id'] }}" data-duracao="{{ item['duracao_minutos'] }}" {% if valores['servico_id'] == item['id']|string %}selected{% endif %}>{{ item['nome'] }} — {{ item['duracao_minutos'] }} min</option>
         {% endfor %}
       </select>
     </div>
@@ -75,11 +77,43 @@
         <option value="encaixe" {% if valores['origem'] == 'encaixe' %}selected{% endif %}>Encaixe</option>
       </select>
     </div>
-    <p class="aviso">O horário final é calculado automaticamente com base na duração do serviço. A disponibilidade será confirmada somente após a validação no servidor.</p>
+    <p class="previsao" id="previsao" role="status" aria-live="polite">Escolha o serviço, a data e o horário inicial para visualizar a previsão de término.</p>
+    <p class="aviso">A previsão não reserva o horário. A disponibilidade e o horário final serão confirmados somente após validação no servidor.</p>
     <div class="acoes"><button type="submit" {% if not clientes or not profissionais or not servicos %}disabled{% endif %}>Confirmar agendamento</button>
-      <a href="{{ url_for('auth.agenda') }}">Cancelar e voltar</a>
+      <a class="acao-link" href="{{ url_for('auth.agenda') }}">Cancelar e voltar</a>
     </div>
   </form>
 </section></main>
+<script>
+  // Previsão informativa; o servidor continua sendo a fonte de verdade.
+  (() => {
+    const servico = document.getElementById("servico_id");
+    const dia = document.getElementById("data");
+    const hora = document.getElementById("hora");
+    const mensagem = document.getElementById("previsao");
+    function atualizar() {
+      const opcao = servico.selectedOptions[0];
+      const duracao = Number(opcao?.dataset.duracao);
+      if (!opcao?.dataset.duracao || !dia.value || !/^\d{2}:\d{2}$/.test(hora.value)) {
+        mensagem.textContent = "Escolha o serviço, a data e o horário inicial para visualizar a previsão de término.";
+        return;
+      }
+      const [h, m] = hora.value.split(":").map(Number);
+      const inicio = h * 60 + m;
+      const fim = inicio + duracao;
+      if (!Number.isInteger(duracao) || duracao <= 0 || fim >= 24 * 60) {
+        mensagem.textContent = "O atendimento deve terminar na mesma data. Escolha outro horário.";
+        return;
+      }
+      const formatar = minutos => String(Math.floor(minutos / 60)).padStart(2, "0") + ":" + String(minutos % 60).padStart(2, "0");
+      mensagem.textContent = "Previsão: " + formatar(inicio) + "–" + formatar(fim) + " (" + duracao + " minutos). Disponibilidade ainda não verificada.";
+    }
+    [servico, dia, hora].forEach(campo => {
+      campo.addEventListener("change", atualizar);
+      campo.addEventListener("input", atualizar);
+    });
+    atualizar();
+  })();
+</script>
 </body>
 </html>
