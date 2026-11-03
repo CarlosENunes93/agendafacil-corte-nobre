@@ -94,7 +94,7 @@
     function atualizar() {
       const opcao = servico.selectedOptions[0];
       const duracao = Number(opcao?.dataset.duracao);
-      if (!opcao?.dataset.duracao || !dia.value || !/^\\d{2}:\\d{2}$/.test(hora.value)) {
+      if (!opcao?.dataset.duracao || !dia.value || !/^\d{2}:\d{2}$/.test(hora.value)) {
         mensagem.textContent = "Escolha o serviço, a data e o horário inicial para visualizar a previsão de término.";
         return;
       }
