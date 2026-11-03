@@ -28,6 +28,11 @@
     .confirmado{background:#e6f3ed;color:#175739}
     .vazio{border:1px dashed #8da0b2;border-radius:9px;padding:20px}
     .fim{display:flex;justify-content:flex-end}
+    .acao-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 12px;border-radius:8px;color:#075180;font-weight:700}
+    .acoes-item{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px}
+    .acoes-item form{margin:0}
+    .acoes-item button{min-height:44px}
+    .acao-link:focus-visible{outline:3px solid #b58427;outline-offset:3px}
     @media(max-width:420px){.painel{padding:17px}.fim button{width:100%}}
   </style>
 </head>
@@ -60,7 +65,7 @@
       {% for categoria, mensagem in get_flashed_messages(with_categories=true) %}
       <p role="status" style="background:#e6f3ed;color:#175739;padding:14px;border-radius:8px;font-weight:700">{{ mensagem }}</p>
       {% endfor %}
-      <p><a href="{{ url_for('auth.novo_agendamento') }}">+ Novo agendamento</a></p>
+      <p><a class="acao-link" href="{{ url_for('auth.novo_agendamento') }}">+ Novo agendamento</a></p>
       <h2 id="atendimentos">Atendimentos confirmados: {{ atendimentos|length }}</h2>
       <p>Exibindo registros existentes em {{ data[8:10] }}/{{ data[5:7] }}/{{ data[:4] }}.</p>
       {% if atendimentos %}
@@ -74,8 +79,8 @@
             <span class="etiqueta">{{ 'Encaixe' if item['origem'] == 'encaixe' else 'Agendado' }}</span>
             <span class="etiqueta confirmado">✓ Confirmado</span>
           </div>
-          <div class="acoes-item" style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:14px">
-            <a href="{{ url_for('auth.reagendar_atendimento', agendamento_id=item['id']) }}">Reagendar</a>
+          <div class="acoes-item">
+            <a class="acao-link" href="{{ url_for('auth.reagendar_atendimento', agendamento_id=item['id']) }}">Reagendar</a>
             <form method="post" action="{{ url_for('auth.cancelar_atendimento', agendamento_id=item['id']) }}">
               <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
               <button type="submit" aria-label="Cancelar atendimento de {{ item['cliente'] }}">Cancelar</button>
