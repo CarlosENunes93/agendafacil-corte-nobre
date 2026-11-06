@@ -1,18 +1,21 @@
-"""Páginas públicas e verificação básica de disponibilidade do servidor.
 
-Rotas de agendamento e acesso autenticado serão implementadas em etapas futuras.
-"""
+"""Páginas públicas e verificação de saúde do AgendaFácil."""
 
-from flask import Blueprint, jsonify, render_template
+from flask import Blueprint, jsonify, redirect, url_for
 
 web = Blueprint("web", __name__)
 
 
 @web.get("/")
 def index():
-    return render_template("index.html")
+    """Encaminha o visitante para o acesso ao sistema."""
+    return redirect(url_for("auth.login"))
 
 
 @web.get("/health")
 def health():
-    return jsonify({"status": "ok", "aplicacao": "AgendaFácil"})
+    """Endpoint público para monitoramento de disponibilidade."""
+    return jsonify({
+        "status": "ok",
+        "aplicacao": "AgendaFácil",
+    })
