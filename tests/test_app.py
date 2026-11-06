@@ -21,11 +21,13 @@ def client(app):
     return app.test_client()
 
 
-def test_pagina_inicial_responde_em_portugues(client):
-    response = client.get("/")
-    assert response.status_code == 200
-    assert b'lang="pt-BR"' in response.data
-    assert "Barbearia Corte Nobre".encode("utf-8") in response.data
+
+def test_pagina_inicial_redireciona_para_login(client):
+    resposta = client.get("/")
+
+    assert resposta.status_code == 302
+    assert resposta.headers["Location"].endswith("/login")
+
 
 
 def test_endpoint_health_retorna_json(client):
